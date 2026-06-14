@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Studio - Design, Edit & Export</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: #1e1e24;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* Sidebar - Controls */
+        .sidebar {
+            width: 300px;
+            background-color: #111116;
+            border-right: 1px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h3 {
+            font-size: 16px;
+            color: #00adb5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        input[type="text"], select, input[type="color"] {
+            width: 100%;
+            padding: 10px;
+            background: #222831;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="color"] {
+            height: 40px;
+            cursor: pointer;
+        }
+
+        /* Main Workspace */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Canvas Area */
+        .canvas-area {
+            flex: 2;
+            background: #2b2b36;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-bottom: 1px solid #333;
+        }
+
+        /* Dynamic Component Preview */
+        #preview-element {
+            padding: 12px 24px;
+            background-color: #00adb5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* Bottom Panels (Code & Console) */
+        .bottom-panels {
+            flex: 1;
+            display: flex;
+            background: #141419;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #333;
+            padding: 15px;
+        }
+
+        .panel:last-child {
+            border-right: none;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .btn-action {
+            background: #00adb5;
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .btn-action:hover {
+            background: #008c95;
+        }
+
+        .btn-download {
+            background: #393e46;
+            margin-left: 5px;
+        }
+
+        .btn-download:hover {
+            background: #4f5663;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            background: #1e1e24;
+            border: 1px solid #333;
+            color: #a6e22e;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            resize: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        #console-log {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border: 1px solid #333;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            overflow-y: auto;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <h3>UI Customizer</h3>
+            <p style="font-size: 12px; color: #777; margin-bottom: 15px;">Live Element Editor</p>
+        </div>
+
+        <div class="control-group">
+            <label for="btn-text">Button Text</label>
+            <input type="text" id="btn-text" value="Click Me">
+        </div>
+
+        <div class="control-group">
+            <label for="btn-bg">Background Color</label>
+            <input type="color" id="btn-bg" value="#00adb5">
+        </div>
+
+        <div class="control-group">
+            <label for="btn-color">Text Color</label>
+            <input type="color" id="btn-color" value="#ffffff">
+        </div>
+
+        <div class="control-group">
+            <label for="btn-radius">Border Radius (Rounded)</label>
+            <select id="btn-radius">
+                <option value="0px">Square (0px)</option>
+                <option value="4px" selected>Smooth (4px)</option>
+                <option value="8px">Rounded (8px)</option>
+                <option value="25px">Pill (25px)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="workspace">
+        
+        <div class="canvas-area">
+            <div style="position: absolute; top: 15px; left: 15px; font-size: 12px; color: #777;">LIVE CANVAS</div>
+            <button id="preview-element">Click Me</button>
+        </div>
+
+        <div class="bottom-panels">
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Source Code</h3>
+                    <div>
+                        <button class="btn-action" onclick="copyCode()">Copy Code</button>
+                        <button class="btn-action btn-download" onclick="downloadCode()">Download</button>
+                    </div>
+                </div>
+                <textarea id="code-output" readonly></textarea>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Console Screen</h3>
+                    <button class="btn-action btn-download" onclick="clearConsole()">Clear</button>
+                </div>
+                <div id="console-log">> System Ready. Click the button on canvas to test...</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Elements Selection
+        const previewElement = document.getElementById('preview-element');
+        const btnTextInp = document.getElementById('btn-text');
+        const btnBgInp = document.getElementById('btn-bg');
+        const btnColorInp = document.getElementById('btn-color');
+        const btnRadiusInp = document.getElementById('btn-radius');
+        const codeOutput = document.getElementById('code-output');
+        const consoleLog = document.getElementById('console-log');
+
+        // Function to update element and generate code
+        function updateDesign() {
+            // 1. Live Changes Apply Karo
+            previewElement.innerText = btnTextInp.value;
+            previewElement.style.backgroundColor = btnBgInp.value;
+            previewElement.style.color = btnColorInp.value;
+            previewElement.style.borderRadius = btnRadiusInp.value;
+
+            // 2. Clean HTML/CSS Code Generate Karo
+            const generatedHTML = `<button class="custom-btn">${btnTextInp.value}</button>
+
+<style>
+.custom-btn {
+    padding: 12px 24px;
+    background-color: ${btnBgInp.value};
+    color: ${btnColorInp.value};
+    border: none;
+    border-radius: ${btnRadiusInp.value};
+    font-size: 16px;
+    cursor: pointer;
+    font-family: sans-serif;
+    transition: background 0.3s ease;
+}
+.custom-btn:hover {
+    opacity: 0.9;
+}
+</style>`;
+
+            codeOutput.value = generatedHTML;
+        }
+
+        // Console Log Functionality
+        function logToConsole(message) {
+            const time = new Date().toLocaleTimeString();
+            consoleLog.innerHTML += `<br><span style="color: #777;">[${time}]</span> ${message}`;
+            consoleLog.scrollTop = consoleLog.scrollHeight; // Auto-scroll to bottom
+        }
+
+        function clearConsole() {
+            consoleLog.innerHTML = `> Console Cleared.`;
+        }
+
+        // Copy Code Function
+        function copyCode() {
+            codeOutput.select();
+            document.execCommand('copy');
+            logToConsole('<span style="color: #00adb5;">Success: Code copied to clipboard!</span>');
+        }
+
+        // Download File Function
+        function downloadCode() {
+            const blob = new Blob([codeOutput.value], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'ui-component.html';
+            link.click();
+            logToConsole('<span style="color: #00ff00;">Success: ui-component.html downloaded!</span>');
+        }
+
+        // Event Listeners for Live Editing
+        btnTextInp.addEventListener('input', updateDesign);
+        btnBgInp.addEventListener('input', updateDesign);
+        btnColorInp.addEventListener('input', updateDesign);
+        btnRadiusInp.addEventListener('change', updateDesign);
+
+        // Canvas Button Click Event (Triggers Console)
+        previewElement.addEventListener('click', () => {
+            logToConsole(`Event: Button "${btnTextInp.value}" was clicked successfully!`);
+        });
+
+        // Initial Run on Load
+        updateDesign();
+    </script>
+</body>
+</html>
